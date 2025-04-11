@@ -1,12 +1,10 @@
 #pragma once 
-
+#include "template_types.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-typedef char obj_t;
 
 
 typedef enum {
@@ -17,6 +15,7 @@ typedef enum {
   UNORDERED_MAP,
   LIST
 } collection_typename_t;
+
 
 //for printing collection contents 
 typedef void (*print_fun_t)(obj_t*);

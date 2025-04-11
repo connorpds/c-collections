@@ -2,6 +2,9 @@
 #include "collections.h"
 
 
+//have a union type for the constructor - can either have a switch statement for strings or 
+//just interpret as sizeof.
+
 
 int construct_test(){
   //let's make an int vector!
@@ -12,13 +15,21 @@ int construct_test(){
 
 int push_back_test(){
   //let's make an int vector!
-  vector_t* intv_0 = vector(sizeof(int));
+  vector_t* intv_0 = vector("int");
   int tmp42 = 42; 
   push_back(intv_0, &tmp42);
   int* i0 = intv_0->begin_ptr;
   if (*i0 == 42) return 0;
   else return 1;
 }
+
+int testf(){
+  char joe = 'j';
+  int mama = 1;
+  double shrek = 69.0;
+  return mama + joe + shrek;
+}
+
 
 
 void int_print(obj_t* val){

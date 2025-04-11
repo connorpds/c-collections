@@ -1,4 +1,5 @@
 #include "c_vector.h"
+#include "collections.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -25,14 +26,17 @@ void vec_incr_num_elements(vector_t* vec, int count){
 ////////////////////////////////////////////
 
 //basic constructor 
-vector_t* vector(size_t element_size){
+vector_t* vector(template_type_arg_t T){
+  
+  
+
   //allocate struct space 
   vector_t* vec = calloc(1, sizeof(vector_t));
   //set the element size 
-  vec->element_size = element_size;
   //set the type to vector 
   vec->type = VECTOR;
 
+  //BIND A DIFFERENT PUSH_BACK BASED ON THE TYPE! 
   bind_vector_methods(vec);
   
 

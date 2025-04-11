@@ -14,7 +14,7 @@
 
 
 ///////////////////////////////////////  CONSTRUCTORS   /////////////////////////////////// 
-vector_t* vector(size_t element_size);
+vector_t* vector(template_type_arg_t constr_arg);
 void bind_vector_methods(vector_t* vec);
 
 
@@ -42,7 +42,13 @@ void vec_print(vector_t* vec);
 
 void vec_clear_free(vector_t* vec); //if vec holds ptrs, free those.
 
-//TODO:
+
+//TODO: fill these out, then for every type rip 
+void char_vec_push_back(vector_t* vec, char c);
+void char_vec_insert(vector_t* vec, char c, unsigned idx);
+void char_vec_find(vector_t* vec, char c);
+void char_vec_remove(vector_t* vec, char c);
+
 
 
 
