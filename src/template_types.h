@@ -4,23 +4,36 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 
-typedef char obj_t;
 
-typedef union{
-  size_t size_v;
-  unsigned long size_ul;
-  char* type_str;
-  /*
-  char type_str3[4];
-  char type_str4[5];
-  char type_str5[6];
-  char type_str6[7];
-  char type_str7[8];
-  char type_str8[9];
-  */
-} template_type_arg_t;
 
+////////////  TEMPLATE ARG TYPE + PARAMETERS //////////////// 
+typedef __uint128_t template_arg_t; 
+#define COMPRESSED_CHAR_BITWIDTH 6
+#define CHARS_PER_ARG sizeof(template_arg_t) / COMPRESSED_CHAR_BITWIDTH
+typedef char compressed_char_t;
+
+
+/*  Create Compressed String Format: convert chars to 6 bits each - 10 / int64.
+ *  21 / int128
+ *  Last 4 bits can be used to encode info.
+ *  Create an api for packing/reading strings in that format.
+ */
+
+
+compressed_char_t compress_char(char c);
+char translate_compressed_char(compressed_char_t cc);
+char decompress_char(template_arg_t cmp_str, int idx);
+void mark_packed(template_arg_t* just_packed);
+template_arg_t pack_templ_arg_str(char* type_str);
+void unpack_templ_arg_str(template_arg_t packed, char unpacked[CHARS_PER_ARG]);
+void print_compressed_str(template_arg_t packed);
+
+template_arg_t template_arg(char* type_str);
+
+
+///////////   POD Type Specificiers ///////////// 
 typedef enum{
   NOT_POD,
   CHAR__,
@@ -37,28 +50,11 @@ typedef enum{
   PTR__
 } pod_type_t; 
 
+pod_type_t pod_type(template_arg_t type);
 
-pod_type_t pod_type(template_type_arg_t type);
 
-typedef union{
-  char c;
-  short s;
-  bool b;
-  int i;
-  long l;
-  float f;
-  double d;
-  int8_t i8;
-  uint8_t ui8;
-  int16_t i16;
-  uint16_t ui16;
-  int32_t i32;
-  uint32_t ui32;
-  int64_t i64;
-  uint64_t ui64;
-  obj_t o;
-  obj_t* optr;
-  void* v;
-} template_data_t;
+///////////// Collection Object Types /////////////////
+typedef char obj_t;
+
 
 

@@ -26,7 +26,7 @@ void vec_incr_num_elements(vector_t* vec, int count){
 ////////////////////////////////////////////
 
 //basic constructor 
-vector_t* vector(template_type_arg_t T){
+vector_t* vector(template_arg_t T){
   
   
 
