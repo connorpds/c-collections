@@ -152,16 +152,20 @@ pod_type_t pod_type(template_arg_t type){
   unpack_templ_arg_str(type, type_str);
 
   outtype = 
-    strcmp(type_str, "char")   ?  CHAR__   :
-    strcmp(type_str, "float")  ?  FLOAT__  :
-    strcmp(type_str, "double") ?  DOUBLE__ :
-    strcmp(type_str, "bool")   ? BOOL__    :
-    strcmp(type_str, "int")    ? INT32__   :
-    strcmp(type_str, "short")  ? INT16__   :
-    (strcmp(type_str, "uint8_t")  || strcmp(type_str, "int8_t"))  ? INT8__  : 
-    (strcmp(type_str, "uint16_t") || strcmp(type_str, "int16_t")) ? INT16__ :
-    (strcmp(type_str, "uint32_t") || strcmp(type_str, "int32_t")) ? INT32__ :
-    (strcmp(type_str, "uint64_t") || strcmp(type_str, "int64_t")) ? INT64__ :
+    strcmp(type_str, "char")      ? CHAR__    :
+    strcmp(type_str, "float")     ? FLOAT__   :
+    strcmp(type_str, "double")    ? DOUBLE__  :
+    strcmp(type_str, "bool")      ? BOOL__    :
+    strcmp(type_str, "int")       ? INT32__   :
+    strcmp(type_str, "short")     ? INT16__   :
+    strcmp(type_str, "uint8_t")   ? UINT8__   :
+    strcmp(type_str, "int8_t")    ? INT8__    : 
+    strcmp(type_str, "uint16_t")  ? UINT16__  :   
+    strcmp(type_str, "int16_t")   ? INT16__   :
+    strcmp(type_str, "uint32_t")  ? UINT32__  :
+    strcmp(type_str, "int32_t")   ? INT32__   :
+    strcmp(type_str, "uint64_t")  ? UINT64__  :
+    strcmp(type_str, "int64_t")   ? INT64__   :
     (strcmp(type_str, "void*")    || strcmp(type_str, "obj_t*") || strcmp(type_str, "ptr")) ? PTR__ :
     NOT_POD;
 

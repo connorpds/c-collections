@@ -46,6 +46,10 @@ typedef enum{
   INT16__,
   INT32__,
   INT64__,
+  UINT8__,
+  UINT16__,
+  UINT32__,
+  UINT64__,
   BOOL__,
   PTR__
 } pod_type_t; 
