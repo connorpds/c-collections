@@ -1,5 +1,6 @@
 #include "vector_test.h"
 #include "collections.h"
+#include "string_packed_ints.h"
 
 
 //have a union type for the constructor - can either have a switch statement for strings or 
@@ -15,7 +16,7 @@ int construct_test(){
 
 int push_back_test(){
   //let's make an int vector!
-  vector_t* intv_0 = vector("int");
+  vector_t* intv_0 = vector(template_arg("int"));
   int tmp42 = 42; 
   push_back(intv_0, &tmp42);
   int* i0 = intv_0->begin_ptr;
