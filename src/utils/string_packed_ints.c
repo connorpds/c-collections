@@ -104,6 +104,16 @@ void mark_packed(packed_int_t* just_packed){
   *just_packed = *just_packed | MSB_hot;
 }
 
+void mark_not_packed(packed_int_t* not_packed){
+  packed_int_t MSB_not = ~((packed_int_t)0x1 << (sizeof(packed_int_t) * 8 - 1));
+  *not_packed = *not_packed & MSB_not;
+}
+
+bool is_packed(packed_int_t val){
+  packed_int_t MSB_hot = (packed_int_t)0x1 << (sizeof(packed_int_t) * 8 - 1);
+  return (MSB_hot & val);
+}
+
 
 packed_int_t string_packed_int(const char* str){
   packed_int_t packed = 0x0UL; 
@@ -186,8 +196,9 @@ void string_packed_int_tests(){
 
 }
 
-
+/*
 int main(){
    string_packed_int_tests();
    return 0;
 }
+*/

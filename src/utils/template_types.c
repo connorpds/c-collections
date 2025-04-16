@@ -1,4 +1,5 @@
 #include "template_types.h"
+#include <stdint.h>
 
 
 template_arg_t template_arg(char* type_str){
@@ -41,3 +42,75 @@ pod_type_t pod_type(template_arg_t type){
   return outtype;
 }
 
+
+
+wide_pod_t create_typemask(size_t type_size){
+  wide_pod_t mask = 0;
+  for (int i = 0; i < type_size; i++)
+    mask |= (0xFF << i * sizeof(char));
+  return mask;
+}
+
+
+size_t pod_size(pod_type_t type){
+  size_t retsize = 0;
+  switch (type){
+    case NOT_POD:
+      retsize = 0;
+      break;
+    case CHAR__:
+      retsize = sizeof(char);
+      break;
+    case INT__:
+      retsize = sizeof(int);
+      break;
+    case LONG__:
+      retsize = sizeof(long);
+      break;
+    case SHORT__:
+      retsize = sizeof(short);
+      break;
+    case INT8__:
+      retsize = sizeof(int8_t);
+      break;
+    case UINT8__:
+      retsize = sizeof(uint8_t);
+      break;
+    case INT16__:
+      retsize = sizeof(int16_t);
+      break;
+    case UINT16__:
+      retsize = sizeof(uint16_t);
+      break;
+    case INT32__:
+      retsize = sizeof(int32_t);
+      break;
+    case UINT32__:
+      retsize = sizeof(uint32_t);
+      break;
+    case INT64__:
+      retsize = sizeof(int64_t);
+      break;
+    case UINT64__:
+      retsize = sizeof(uint64_t);
+      break;
+    case BOOL__:
+      retsize = sizeof(bool);
+      break;
+    case FLOAT__:
+      retsize = sizeof(float);
+      break;
+    case DOUBLE__:
+      retsize = sizeof(double);
+      break;
+    case PTR__:
+      retsize = sizeof(void*);
+      break;
+    default:
+      retsize = 0;
+      break;
+  }
+
+  return retsize;
+
+}

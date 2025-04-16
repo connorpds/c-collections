@@ -1,4 +1,5 @@
 #include "collections.h"
+#include "utils/template_types.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////    CONSTRUCTION   /////////////////////////////////////
@@ -18,6 +19,11 @@ void set_template_value_destructor(coll_t* coll, delete_fun_t fun){
 void set_template_key_destructor(coll_t* coll, delete_fun_t fun){
   coll->template_key_destructor = fun;
 }
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////   HELPERS   //////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -31,6 +37,13 @@ bool bytes_equal(obj_t* obj_t0, obj_t* obj_t1, size_t obj_t_size){
   return true;
 }
 
+wide_pod_t typemask_key(coll_t* coll, wide_pod_t key){
+  return key & coll->key_mask;
+}
+
+wide_pod_t typemask_value(coll_t* coll, wide_pod_t val){
+  return val & coll->value_mask; 
+}
 
 
 

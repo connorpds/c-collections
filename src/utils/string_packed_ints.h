@@ -16,7 +16,9 @@ compressed_char_t compress_char(char c);
 char translate_compressed_char(compressed_char_t cc);
 char decompress_char(packed_int_t cmp_str, int idx);
 void mark_packed(packed_int_t* just_packed);
+void mark_not_packed(packed_int_t* not_packed);
 
+bool is_packed(packed_int_t val);
 packed_int_t string_packed_int(const char* str);
 
 void unpack_string(packed_int_t packed, char unpacked[CHARS_PER_ARG]);

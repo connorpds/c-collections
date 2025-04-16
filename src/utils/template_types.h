@@ -10,6 +10,7 @@
 
 ////////////  TEMPLATE ARG TYPE + PARAMETERS //////////////// 
 typedef packed_int_t template_arg_t; 
+typedef packed_int_t wide_pod_t;
 
 
 /*  Create Compressed String Format: convert chars to 6 bits each - 10 / int64.
@@ -20,7 +21,7 @@ typedef packed_int_t template_arg_t;
 
 
 
-packed_int_t template_arg(char* type_str);
+template_arg_t template_arg(char* type_str);
 
 ///////////   POD Type Specificiers ///////////// 
 typedef enum{
@@ -44,10 +45,12 @@ typedef enum{
 } pod_type_t; 
 
 pod_type_t pod_type(template_arg_t type);
+size_t pod_size(pod_type_t type);
 
 
 ///////////// Collection Object Types /////////////////
 typedef char obj_t;
 
 
+wide_pod_t create_typemask(size_t type_size);
 

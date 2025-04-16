@@ -1,5 +1,5 @@
 #pragma once 
-#include "template_types.h"
+#include "utils/template_types.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +17,8 @@ typedef enum {
 } collection_typename_t;
 
 
+typedef enum {KEY, VALUE} key_val;
+
 //for printing collection contents 
 typedef void (*print_fun_t)(obj_t*);
 //for destructing obj_tects  
@@ -30,6 +32,8 @@ struct coll_t{
   collection_typename_t type;
   //content type size 
   size_t element_size;
+  size_t key_size;
+  size_t value_size;
 
   //Methods!
   obj_t* (*index)(coll_t*, int);
@@ -56,7 +60,8 @@ struct coll_t{
   print_fun_t template_value_print;
   print_fun_t template_key_print;
 
-
+  wide_pod_t key_mask;
+  wide_pod_t value_mask;
 
   delete_fun_t template_value_destructor;
   delete_fun_t template_key_destructor;
@@ -70,6 +75,8 @@ struct coll_t{
 
 ///////////////////////// HELPERS ///////////////////////////////
 bool bytes_equal(obj_t* obj_t0, obj_t* obj_t1, size_t obj_t_size);
+wide_pod_t typemask_key(coll_t* coll, wide_pod_t key);
+wide_pod_t typemask_value(coll_t* coll, wide_pod_t val);
 
 ///////////////////////// BOUND METHOD WRAPPERS //////////////// 
 

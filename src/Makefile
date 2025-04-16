@@ -3,8 +3,8 @@ CFLAGS =  -g3 -O0 -Wall -std=c99 -Wno-incompatible-pointer-types -Wno-pointer-si
 ASAN_FLAGS = -fsanitize=address -fno-omit-frame-pointer
 
 #sources 
-SOURCES := $(wildcard *.c)
-HEADERS := $(wildcard *.h)
+SOURCES := $(wildcard *.c) $(wildcard utils/*.c) 
+HEADERS := $(wildcard *.h) $(wildcard utils/*.h)
 
 #executable
 EXEC = vector_test

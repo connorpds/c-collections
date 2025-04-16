@@ -1,6 +1,6 @@
 #include "vector_test.h"
 #include "collections.h"
-#include "string_packed_ints.h"
+#include "utils/template_types.h"
 
 
 //have a union type for the constructor - can either have a switch statement for strings or 
@@ -62,6 +62,15 @@ vector_t* int_vector_basic(){
   return intv_0;
 }
 
+
+vector_t* int_vector_pod(){
+  vector_t* intv_0 = vector(template_arg("int"));
+  set_value_print_fun(intv_0, int_print);
+  return intv_0;
+}
+
+
+
 void fibonacci_printtest(vector_t* vec, int n){
   printf("### TESTING PRINTING A FIBONACCI SEQUENCE ###\n");
   //printf("Entered compound 0!\n");
@@ -96,6 +105,17 @@ void fibonacci(vector_t* vec, int n){
     int descendant = *antecedent + *preantecedent;
     //printf("descendant = %d\n", descendant);
     push_back(vec, &descendant);
+  }
+}
+
+//TODO: change the typing of obj_t* as necessary to make this work correctly.
+void pod_fibonacci(vector_t* vec, int n){
+  push_back(vec, 0);
+  push_back(vec, 1);
+  for (int i = 2; i < n; i++){
+    int antecedent = *index_(vec, i - 1);
+    int preantecedent = *index_(vec, i - 2);
+    push_back(vec, antecedent + preantecedent);
   }
 }
 
@@ -136,7 +156,7 @@ void clear_test(){
 }
 
 
-/*
+
 int main(){
   printf("Construction test result: %d (0 = SUCCESS)\n", construct_test());
   printf("Push_back test result: %d (0 = SUCCESS)\n", push_back_test());
@@ -150,4 +170,4 @@ int main(){
   return 0;// + push_back_test();
 }
 
-*/
+

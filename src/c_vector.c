@@ -1,5 +1,7 @@
 #include "c_vector.h"
 #include "collections.h"
+#include "utils/string_packed_ints.h"
+#include "utils/template_types.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -29,15 +31,23 @@ void vec_incr_num_elements(vector_t* vec, int count){
 vector_t* vector(template_arg_t T){
   
   
-
   //allocate struct space 
   vector_t* vec = calloc(1, sizeof(vector_t));
   //set the element size 
   //set the type to vector 
   vec->type = VECTOR;
 
-  //BIND A DIFFERENT PUSH_BACK BASED ON THE TYPE! 
-  bind_vector_methods(vec);
+  if (!is_packed(T)){
+    vec->element_size = (size_t)T;  
+    bind_vector_methods(vec);
+  }
+  else{
+    pod_type_t type = pod_type(T);
+    vec->element_size = pod_size(type);
+    bind_pod_vector_methods(vec);
+  }
+
+  vec->value_mask = create_typemask(vec->element_size);
   
 
   return vec; 
@@ -60,6 +70,22 @@ void bind_vector_methods(vector_t* vec){
 
 }
 
+void bind_pod_vector_methods(vector_t* vec){
+  vec->index = vec_index;
+  vec->emplace_back = vec_emplace_back;
+  vec->push_back = (void (*)(coll_t*, obj_t*)) pod_vec_push_back;
+  vec->clear = vec_clear;
+  vec->insert = (obj_t* (*)(coll_t*, obj_t*, obj_t*))pod_vec_insert;
+  vec->write = (void (*)(coll_t*, obj_t*, obj_t*))vec_write; 
+  vec->erase_region = vec_erase_region;
+  vec->erase = vec_erase;
+  vec->erase_idx = vec_erase_idx;
+  vec->find = (obj_t* (*)(coll_t*, obj_t*))pod_vec_find;
+  vec->remove = (obj_t* (*)(coll_t*,obj_t*))pod_vec_remove;
+  vec->size = vec_size;
+  vec->print_coll = vec_print;
+
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// CONTENT OPERATIONS  /////////////////////////////////////
@@ -214,7 +240,7 @@ int vec_bounds_check(vector_t* vec, obj_t* ptr){
   bool ptr_ge_begin = (begin_diff >= 0);
   bool ptr_l_end = ((char*)vec->end_ptr - (char*) ptr) > 0;
   
-  return (!aligned)          ?  -1  : //PTR NOT ALIGNED TO obj_tECT SIZE 
+  return (!aligned)          ?  -1  : //PTR NOT ALIGNED TO OBJECT SIZE 
          (!ptr_ge_begin)     ?  1   : //PTR BEFORE START REGION 
          (!ptr_l_end)        ?  2   : //PTR AFTER END REGION 
                                 0   ; //PTR IS WITHIN BOUNDS 
@@ -239,3 +265,28 @@ void vec_clear_free(vector_t* vec){
 }
 
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////  TYPE-SPECIFIC FUNCTIONS ////////////// 
+///////////////////////////////////////////////////////////
+void pod_vec_push_back(vector_t* vec, wide_pod_t val){
+  val = typemask_value(vec, val);
+  vec_push_back(vec, (obj_t*)&val);
+}
+//todo: packed_ptr_t
+
+
+obj_t* pod_vec_insert(vector_t* vec, wide_pod_t val, unsigned idx){
+  val = typemask_value(vec, val);
+  return vec_insert(vec, (obj_t*)&val, idx);
+}
+
+obj_t* pod_vec_find(vector_t* vec, wide_pod_t val){
+  val = typemask_value(vec, val);
+  return vec_find(vec, (obj_t*)&val);
+}
+
+obj_t* pod_vec_remove(vector_t* vec, wide_pod_t val){
+  val = typemask_value(vec, val);
+  return vec_remove(vec, (obj_t*)&val);
+}

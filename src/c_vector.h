@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "collections.h"
+#include "utils/string_packed_ints.h"
 #include <stdint.h>
 
 //////////////////////////////////////// SIMPLE S ////////////////////////////////////
@@ -14,8 +15,9 @@
 
 
 ///////////////////////////////////////  CONSTRUCTORS   /////////////////////////////////// 
-vector_t* vector(template_type_arg_t constr_arg);
+vector_t* vector(template_arg_t T);
 void bind_vector_methods(vector_t* vec);
+void bind_pod_vector_methods(vector_t* vec);
 
 
 //////////////////////////////////////   OPERATIONS     //////////////////////////////////
@@ -44,10 +46,10 @@ void vec_clear_free(vector_t* vec); //if vec holds ptrs, free those.
 
 
 //TODO: fill these out, then for every type rip 
-void char_vec_push_back(vector_t* vec, char c);
-void char_vec_insert(vector_t* vec, char c, unsigned idx);
-void char_vec_find(vector_t* vec, char c);
-void char_vec_remove(vector_t* vec, char c);
+void pod_vec_push_back(vector_t* vec, wide_pod_t val);
+obj_t* pod_vec_insert(vector_t* vec, wide_pod_t val, unsigned idx);
+obj_t* pod_vec_find(vector_t* vec, wide_pod_t val);
+obj_t* pod_vec_remove(vector_t* vec, wide_pod_t val);
 
 
 
