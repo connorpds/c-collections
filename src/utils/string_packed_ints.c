@@ -38,6 +38,7 @@
  * _ : 37 : 0x25
  * INVALID : 38 : 0x26
  * * : 39 : 0x27
+ * SPACE : 40 : 0x28 
  */ 
 
 
@@ -45,17 +46,21 @@ compressed_char_t compress_char(char c){
   //create a char with just the 6 bits of our format populated 
   compressed_char_t compressed_char = 0x0UL;
   if (c >= 0x41 && c <= 0x5A) //uppercase 
-    compressed_char = c - 0x40 + 0xA; 
+    compressed_char = c - 0x41 + 0xA; 
   else if (c >= 0x61 && c <= 0x7A) //lowercase
-    compressed_char = c - 0x60 + 0xA;
+    compressed_char = c - 0x61 + 0xA;
   else if (c >= 0x31 && c <= 0x39) //1-9
     compressed_char = c - 0x30;
   else if (c == 0x30) 
     compressed_char = 0x24;
   else if (c == '\0') 
     compressed_char = 0x0;
+  else if (c == '_')
+    compressed_char = 0x25;
   else if (c == '*')
     compressed_char = 0x27;
+  else if (c == ' ')
+    compressed_char = 0x28;
   else 
     perror("Character not supported!\n");
 
@@ -77,6 +82,8 @@ char translate_compressed_char(compressed_char_t cc){
     (cc == 0x26)              ? 0x15            :
     // == '*' ? translate to character '*'
     (cc == 0x27)              ? '*'             :
+    // == SPACE ? translate to character ' ' 
+    (cc == 0x28)              ? ' '             :
     // == null terminator? translate to character 0 
     0;
   return translated;
@@ -93,7 +100,7 @@ char decompress_char(packed_int_t cmp_str, int idx){
 } 
 
 void mark_packed(packed_int_t* just_packed){
-  packed_int_t MSB_hot = 0x1ULL << (sizeof(packed_int_t) * 8 - 1);
+  packed_int_t MSB_hot = (packed_int_t)0x1 << (sizeof(packed_int_t) * 8 - 1);
   *just_packed = *just_packed | MSB_hot;
 }
 
@@ -126,11 +133,61 @@ void unpack_string(packed_int_t packed, char unpacked[CHARS_PER_ARG]){
 void print_compressed_string(packed_int_t packed){
   for (int i = 0; i < CHARS_PER_ARG; i++){
     char to_print = decompress_char(packed, i);
-    printf("%c",to_print);
+    if (to_print != 0) printf("%c", to_print);
+    else break;
+  }
+}
+
+
+void test_print_compressed_string(char* test_str){
+  packed_int_t packed = string_packed_int(test_str);
+  printf("Input string:\n%s\n", test_str);
+  for (int i = 0; i < CHARS_PER_ARG; i++){
+    char to_print = decompress_char(packed, i);
+    if (to_print != 0){ 
+      printf("At index %d: %c   ", i, to_print);
+      printf("Expected: %c   ", test_str[i]);
+
+    }
+    else break;
   }
   printf("\n");
 }
 
-void test_a_print(){
-  packed_int_t string_packed_int("potato");
+
+
+
+void test_char_translation(char c){
+  compressed_char_t cmprsd = compress_char(c);
+  char dcmprsd = translate_compressed_char(cmprsd);
+  printf("Input character: %c, Translated: %c\n", c, dcmprsd);
+  printf("(int)Input: %d, (int)Translated: %d\n", c, dcmprsd);
+}
+
+void test_packed_compressed_print(char* str){
+  printf("Input string:\n%s\n", str);
+  printf("Compressed and decompressed string:\n");
+  packed_int_t potato = string_packed_int(str);
+  print_compressed_string(potato);
+  printf("\n");
+}
+
+void string_packed_int_tests(){
+  printf("CHARS_PER_ARG: %d\n", CHARS_PER_ARG);
+  test_char_translation('a');
+  test_char_translation('A');
+  test_char_translation('*');
+  test_char_translation('2');
+  printf("Nonverbose string packing test(s):\n");
+  test_packed_compressed_print("potato");
+  printf("Verbose string packing test(s):\n");
+  test_print_compressed_string("uint128_t");
+  test_print_compressed_string("unsigned long long");
+
+}
+
+
+int main(){
+   string_packed_int_tests();
+   return 0;
 }

@@ -136,7 +136,7 @@ void clear_test(){
 }
 
 
-
+/*
 int main(){
   printf("Construction test result: %d (0 = SUCCESS)\n", construct_test());
   printf("Push_back test result: %d (0 = SUCCESS)\n", push_back_test());
@@ -150,4 +150,4 @@ int main(){
   return 0;// + push_back_test();
 }
 
-
+*/
