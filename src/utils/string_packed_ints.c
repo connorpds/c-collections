@@ -91,8 +91,8 @@ char translate_compressed_char(compressed_char_t cc){
 
 char decompress_char(packed_int_t cmp_str, int idx){
   if (idx >= CHARS_PER_ARG) return 0x15; //nACK!
-
-  packed_int_t mask = 0x3FULL << (idx * COMPRESSED_CHAR_BITWIDTH);
+  packed_int_t mask = 0x3F;
+  mask = mask << (idx * COMPRESSED_CHAR_BITWIDTH);
   packed_int_t masked = cmp_str & mask;
   compressed_char_t cmp_chr = masked >> (idx * COMPRESSED_CHAR_BITWIDTH);
   char decompressed = translate_compressed_char(cmp_chr);
@@ -147,7 +147,7 @@ void test_print_compressed_string(char* test_str){
     if (to_print != 0){ 
       printf("At index %d: %c   ", i, to_print);
       printf("Expected: %c   ", test_str[i]);
-
+      printf("\n");
     }
     else break;
   }
