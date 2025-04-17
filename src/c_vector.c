@@ -58,8 +58,8 @@ void bind_vector_methods(vector_t* vec){
   vec->emplace_back = vec_emplace_back;
   vec->push_back = vec_push_back;
   vec->clear = vec_clear;
-  vec->insert = (obj_t* (*)(coll_t*, ptr_pod_t, ptr_pod_t))vec_insert;
-  vec->write = (void (*)(coll_t*, ptr_pod_t, ptr_pod_t))vec_write; 
+  vec->insert = (obj_t* (*)(coll_t*, obj_t*, obj_t*))vec_insert;
+  vec->write = (void (*)(coll_t*, obj_t*, obj_t*))vec_write; 
   vec->erase_region = vec_erase_region;
   vec->erase = vec_erase;
   vec->erase_idx = vec_erase_idx;
@@ -73,15 +73,15 @@ void bind_vector_methods(vector_t* vec){
 void bind_pod_vector_methods(vector_t* vec){
   vec->index = vec_index;
   vec->emplace_back = vec_emplace_back;
-  vec->push_back = pod_vec_push_back;
+  vec->push_back = (void (*)(coll_t*, obj_t*)) pod_vec_push_back;
   vec->clear = vec_clear;
-  vec->insert = (obj_t* (*)(coll_t*, ptr_pod_t, ptr_pod_t))pod_vec_insert;
-  vec->write = (void (*)(coll_t*, ptr_pod_t, ptr_pod_t))vec_write; 
+  vec->insert = (obj_t* (*)(coll_t*, obj_t*, obj_t*))pod_vec_insert;
+  vec->write = (void (*)(coll_t*, obj_t*, obj_t*))vec_write; 
   vec->erase_region = vec_erase_region;
   vec->erase = vec_erase;
   vec->erase_idx = vec_erase_idx;
   vec->find = (obj_t* (*)(coll_t*, obj_t*))pod_vec_find;
-  vec->remove = (obj_t* (*)(coll_t*, obj_t*))pod_vec_remove;
+  vec->remove = (obj_t* (*)(coll_t*,obj_t*))pod_vec_remove;
   vec->size = vec_size;
   vec->print_coll = vec_print;
 
@@ -109,8 +109,7 @@ void vec_emplace_back(vector_t* vec, obj_t* element_loc){
 
 
 //push a copy of the element at element_loc onto the back of the vector 
-void vec_push_back(vector_t* vec, ptr_pod_t element_loc){
-  obj_t* loc = (obj_t*)element_loc;
+void vec_push_back(vector_t* vec, obj_t* element_loc){
   size_t element_size = vec->element_size;
   size_t num_allocated = vec->num_allocated;
 
@@ -127,7 +126,7 @@ void vec_push_back(vector_t* vec, ptr_pod_t element_loc){
   //update end to reflect new begin 
   vec_update_end(vec);
   //move element to end_ptr because this is push_back 
-  memmove(vec->end_ptr, loc, element_size); // <- intel syntax, gross!
+  memmove(vec->end_ptr, element_loc, element_size); // <- intel syntax, gross!
   vec->num_elements++;
   vec_update_end(vec);
 }
@@ -135,7 +134,6 @@ void vec_push_back(vector_t* vec, ptr_pod_t element_loc){
 
 
 obj_t* vec_insert(vector_t* vec, obj_t* element_loc, unsigned idx){
-  //obj_t* loc = (obj_t*)element_loc;
   size_t num_elements = vec->num_elements;
   size_t num_allocated = vec->num_allocated;
   size_t element_size = vec->element_size;
@@ -159,10 +157,9 @@ obj_t* vec_insert(vector_t* vec, obj_t* element_loc, unsigned idx){
 }
 
 
-void vec_write(vector_t* vec, unsigned idx, ptr_pod_t data_loc){
-  obj_t* loc = (obj_t*) data_loc;
+void vec_write(vector_t* vec, unsigned idx, obj_t* data_loc){
   obj_t* write_ptr = vec_index(vec, idx);
-  memmove(write_ptr, loc, vec->element_size);
+  memmove(write_ptr, data_loc, vec->element_size);
 }
 
 
@@ -200,20 +197,18 @@ obj_t* vec_erase_idx(vector_t* vec, int idx){
   return victim_loc;
 }
 
-
-obj_t* vec_find(vector_t* vec, obj_t* query){
-  //obj_t* query_data = (obj_t*)query;
+obj_t* vec_find(vector_t* vec, obj_t* query_data){
   for (int i = 0; i < vec->num_elements; i++){
     //first get the obj_t 
     obj_t* obj_t_at_i = vec_index(vec, i);
-    if (bytes_equal(obj_t_at_i, query, vec->element_size))
+    if (bytes_equal(obj_t_at_i, query_data, vec->element_size))
       return obj_t_at_i;
   }
   return vec->end_ptr;
 }
 
-obj_t* vec_remove(vector_t* vec, obj_t* query){
-  obj_t* findres = vec_find(vec, query);
+obj_t* vec_remove(vector_t* vec, obj_t* query_data){
+  obj_t* findres = vec_find(vec, query_data);
   if (findres != vec->end_ptr){
     vec_erase(vec, findres);
   }
@@ -274,23 +269,24 @@ void vec_clear_free(vector_t* vec){
 /////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  TYPE-SPECIFIC FUNCTIONS ////////////// 
 ///////////////////////////////////////////////////////////
-void pod_vec_push_back(vector_t* vec, ptr_pod_t val){
+void pod_vec_push_back(vector_t* vec, wide_pod_t val){
   val = typemask_value(vec, val);
-  vec_push_back(vec, (ptr_pod_t)&val);
+  vec_push_back(vec, (obj_t*)&val);
+}
+//todo: packed_ptr_t
+
+
+obj_t* pod_vec_insert(vector_t* vec, wide_pod_t val, unsigned idx){
+  val = typemask_value(vec, val);
+  return vec_insert(vec, (obj_t*)&val, idx);
 }
 
-
-obj_t* pod_vec_insert(vector_t* vec, ptr_pod_t val, unsigned idx){
+obj_t* pod_vec_find(vector_t* vec, wide_pod_t val){
   val = typemask_value(vec, val);
-  return vec_insert(vec, &val, idx);
+  return vec_find(vec, (obj_t*)&val);
 }
 
-obj_t* pod_vec_find(vector_t* vec, ptr_pod_t val){
+obj_t* pod_vec_remove(vector_t* vec, wide_pod_t val){
   val = typemask_value(vec, val);
-  return vec_find(vec, &val);
-}
-
-obj_t* pod_vec_remove(vector_t* vec, ptr_pod_t val){
-  val = typemask_value(vec, val);
-  return vec_remove(vec, &val);
+  return vec_remove(vec, (obj_t*)&val);
 }
