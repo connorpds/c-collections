@@ -20,7 +20,7 @@ typedef enum {
 typedef enum {KEY, VALUE} key_val;
 
 //for printing collection contents 
-typedef void (*print_fun_t)(obj_t*);
+typedef void (*print_fun_t)(obj_t*); //can have a wrapper for pod versions 
 //for destructing obj_tects  
 typedef void (*delete_fun_t)(obj_t*);
 
@@ -36,14 +36,14 @@ struct coll_t{
   size_t value_size;
 
   //Methods!
-  obj_t* (*index)(coll_t*, int);
-  obj_t* (*lookup)(coll_t*, obj_t*);
+  obj_t* (*index)(coll_t*, int); 
+  obj_t* (*lookup)(coll_t*, ptr_pod_t);
   void (*emplace_back)(coll_t*, obj_t*);
-  void (*push_back)(coll_t*, obj_t*);
+  void (*push_back)(coll_t*, ptr_pod_t);
   void (*clear)(coll_t*);
   void (*clear_free)(coll_t*);
-  obj_t* (*insert)(coll_t*, obj_t*, obj_t*);
-  void (*write)(coll_t*, obj_t*, obj_t*);
+  obj_t* (*insert)(coll_t*, ptr_pod_t, ptr_pod_t);
+  void (*write)(coll_t*, ptr_pod_t, ptr_pod_t);
   void (*erase_region)(coll_t*, obj_t*, obj_t*);
   void (*erase)(coll_t*, obj_t*);
   obj_t* (*erase_idx)(coll_t*, int);
@@ -60,8 +60,8 @@ struct coll_t{
   print_fun_t template_value_print;
   print_fun_t template_key_print;
 
-  wide_pod_t key_mask;
-  wide_pod_t value_mask;
+  ptr_pod_t key_mask;
+  ptr_pod_t value_mask;
 
   delete_fun_t template_value_destructor;
   delete_fun_t template_key_destructor;
@@ -75,8 +75,8 @@ struct coll_t{
 
 ///////////////////////// HELPERS ///////////////////////////////
 bool bytes_equal(obj_t* obj_t0, obj_t* obj_t1, size_t obj_t_size);
-wide_pod_t typemask_key(coll_t* coll, wide_pod_t key);
-wide_pod_t typemask_value(coll_t* coll, wide_pod_t val);
+ptr_pod_t typemask_key(coll_t* coll, ptr_pod_t key);
+ptr_pod_t typemask_value(coll_t* coll, ptr_pod_t val);
 
 ///////////////////////// BOUND METHOD WRAPPERS //////////////// 
 

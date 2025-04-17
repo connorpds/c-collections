@@ -11,6 +11,7 @@
 ////////////  TEMPLATE ARG TYPE + PARAMETERS //////////////// 
 typedef packed_int_t template_arg_t; 
 typedef packed_int_t wide_pod_t;
+typedef uintptr_t ptr_pod_t;
 
 
 /*  Create Compressed String Format: convert chars to 6 bits each - 10 / int64.
