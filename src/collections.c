@@ -1,4 +1,5 @@
 #include "collections.h"
+#include "utils/marked_ptrs.h"
 #include "utils/template_types.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +21,17 @@ void set_template_key_destructor(coll_t* coll, delete_fun_t fun){
   coll->template_key_destructor = fun;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////     PASSING        ////////////////////////////////////
+///////////////////////////////////////////////////////////////
+obj_t* pod_t(wide_pod_t val){
+  //allocate a new wide_pod_t on the heap. get a pointer to it 
+  wide_pod_t* val_prime = malloc(sizeof(wide_pod_t));
+  //and mark the pointer as a packed_ptr_t. this will tell the collection 
+  //to free if necessary.
+  return marked_ptr((char*)val_prime);
+}
 
 
 

@@ -1,5 +1,6 @@
 #include "c_vector.h"
 #include "collections.h"
+#include "utils/marked_ptrs.h"
 #include "utils/string_packed_ints.h"
 #include "utils/template_types.h"
 #include <stdint.h>
@@ -39,14 +40,13 @@ vector_t* vector(template_arg_t T){
 
   if (!is_packed(T)){
     vec->element_size = (size_t)T;  
-    bind_vector_methods(vec);
   }
   else{
     pod_type_t type = pod_type(T);
     vec->element_size = pod_size(type);
-    bind_pod_vector_methods(vec);
   }
 
+  bind_vector_methods(vec);
   vec->value_mask = create_typemask(vec->element_size);
   
 
@@ -70,22 +70,6 @@ void bind_vector_methods(vector_t* vec){
 
 }
 
-void bind_pod_vector_methods(vector_t* vec){
-  vec->index = vec_index;
-  vec->emplace_back = vec_emplace_back;
-  vec->push_back = (void (*)(coll_t*, obj_t*)) pod_vec_push_back;
-  vec->clear = vec_clear;
-  vec->insert = (obj_t* (*)(coll_t*, obj_t*, obj_t*))pod_vec_insert;
-  vec->write = (void (*)(coll_t*, obj_t*, obj_t*))vec_write; 
-  vec->erase_region = vec_erase_region;
-  vec->erase = vec_erase;
-  vec->erase_idx = vec_erase_idx;
-  vec->find = (obj_t* (*)(coll_t*, obj_t*))pod_vec_find;
-  vec->remove = (obj_t* (*)(coll_t*,obj_t*))pod_vec_remove;
-  vec->size = vec_size;
-  vec->print_coll = vec_print;
-
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// CONTENT OPERATIONS  /////////////////////////////////////
@@ -126,7 +110,9 @@ void vec_push_back(vector_t* vec, obj_t* element_loc){
   //update end to reflect new begin 
   vec_update_end(vec);
   //move element to end_ptr because this is push_back 
-  memmove(vec->end_ptr, element_loc, element_size); // <- intel syntax, gross!
+  //printf("Element_loc: %p. Unmarked: %p.\n", element_loc, unmarked_ptr(element_loc));
+  memmove(vec->end_ptr, unmarked_ptr(element_loc), element_size); // <- intel syntax, gross!
+  free_if_marked(element_loc);
   vec->num_elements++;
   vec_update_end(vec);
 }
@@ -148,7 +134,8 @@ obj_t* vec_insert(vector_t* vec, obj_t* element_loc, unsigned idx){
   //shift post-idx obj_tects to higher indices
   memmove(insert_loc + element_size, insert_loc, (char*)vec->end_ptr - (char*)insert_loc);
   //copy obj_tect to insert_loc
-  memmove(insert_loc, element_loc, element_size);
+  memmove(insert_loc, unmarked_ptr(element_loc), element_size);
+  free_if_marked(element_loc);
   //increment element count post-insertion
   vec->num_elements++;
   //update end_ptr 
@@ -159,7 +146,8 @@ obj_t* vec_insert(vector_t* vec, obj_t* element_loc, unsigned idx){
 
 void vec_write(vector_t* vec, unsigned idx, obj_t* data_loc){
   obj_t* write_ptr = vec_index(vec, idx);
-  memmove(write_ptr, data_loc, vec->element_size);
+  memmove(write_ptr, unmarked_ptr(data_loc), vec->element_size);
+  free_if_marked(data_loc);
 }
 
 
@@ -179,8 +167,11 @@ void vec_erase_region(vector_t* vec, obj_t* region_start, obj_t* region_end){
 void vec_erase(vector_t* vec, obj_t* victim_loc){
   size_t element_size = vec->element_size;
   obj_t* new_end = (char*)vec->end_ptr - element_size;
+
+  size_t bytes_to_move = (uintptr_t)(vec->end_ptr) - (uintptr_t)victim_loc - element_size;
+
   //move data post-loc 
-  memmove(victim_loc, (char*)victim_loc + element_size, element_size);
+  memmove(victim_loc, (char*)victim_loc + element_size, bytes_to_move);
   //0 the duplicate 
   memset(new_end, 0, element_size);
   vec_incr_num_elements(vec, -1);
@@ -190,8 +181,9 @@ obj_t* vec_erase_idx(vector_t* vec, int idx){
   size_t element_size = vec->element_size;
   obj_t* victim_loc = (char*)vec->begin_ptr + element_size * idx;
   obj_t* new_end = (char*)vec->end_ptr - element_size;
+  size_t bytes_to_move = (uintptr_t)(vec->end_ptr) - (uintptr_t)victim_loc - element_size;
   //move data post-idx to earlier addrs 
-  memmove(victim_loc, (char*)victim_loc + element_size, element_size);
+  memmove(victim_loc, (char*)victim_loc + element_size, bytes_to_move);
   memset(new_end, 0, element_size);
   vec_incr_num_elements(vec, -1);
   return victim_loc;
@@ -201,9 +193,12 @@ obj_t* vec_find(vector_t* vec, obj_t* query_data){
   for (int i = 0; i < vec->num_elements; i++){
     //first get the obj_t 
     obj_t* obj_t_at_i = vec_index(vec, i);
-    if (bytes_equal(obj_t_at_i, query_data, vec->element_size))
+    if (bytes_equal(obj_t_at_i, unmarked_ptr(query_data), vec->element_size)){
+      free_if_marked(query_data);
       return obj_t_at_i;
+    }
   }
+  free_if_marked(query_data);
   return vec->end_ptr;
 }
 

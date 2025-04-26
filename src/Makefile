@@ -1,5 +1,5 @@
 CC = clang 
-CFLAGS =  -g3 -O0 -Wall -std=c99 -Wno-incompatible-pointer-types -Wno-pointer-sign -Wno-format
+CFLAGS =  -g3 -O0 -Wall -std=c99 -Wno-incompatible-pointer-types -Wno-pointer-sign -Wno-format 
 ASAN_FLAGS = -fsanitize=address -fno-omit-frame-pointer
 
 #sources 

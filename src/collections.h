@@ -1,5 +1,6 @@
 #pragma once 
 #include "utils/template_types.h"
+#include "utils/marked_ptrs.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -114,3 +115,6 @@ wide_pod_t typemask_value(coll_t* coll, wide_pod_t val);
 ////////////////////////  METHOD BINDERS  /////////////////////
 void set_value_print_fun(coll_t* coll, print_fun_t fun);
 void set_key_print_fun(coll_t* coll, print_fun_t fun);
+
+///////////////////////  PASSING WRAPPING  ///////////////////
+obj_t* pod_t(wide_pod_t val);

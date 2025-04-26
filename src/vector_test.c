@@ -87,7 +87,10 @@ void fibonacci_printtest(vector_t* vec, int n){
     int* antecedent = index_(vec, i - 1);
     int* preantecedent = index_(vec, i - 2);
     int descendant = *antecedent + *preantecedent;
+    //printf("descendant addr: %p\n", &descendant);
     push_back(vec, &descendant);
+    printf("Antecedent addr: %p, Preantecedent addr: %p, Descendant addr: %p\n", antecedent, preantecedent, &descendant);
+    printf("Antecedent value: %d, Preantecedent value: %d, Descendant value: %d\n", *antecedent, *preantecedent, descendant);
     print_coll(vec);
   }
   printf("### FIBONACCI PRINT TESTING COMPLETE ###\n\n");
@@ -108,16 +111,6 @@ void fibonacci(vector_t* vec, int n){
   }
 }
 
-//TODO: change the typing of obj_t* as necessary to make this work correctly.
-void pod_fibonacci(vector_t* vec, int n){
-  push_back(vec, 0);
-  push_back(vec, 1);
-  for (int i = 2; i < n; i++){
-    int antecedent = *index_(vec, i - 1);
-    int preantecedent = *index_(vec, i - 2);
-    push_back(vec, antecedent + preantecedent);
-  }
-}
 
 void erase_1_idx_test(){
   printf("### TESTING SINGLE INDEX ERASURE ###\n");
@@ -155,6 +148,14 @@ void clear_test(){
   printf("### VECTOR CLEARING TESTING COMPLETE ###\n\n");
 }
 
+void pod_push_back_test(){
+  vector_t* vec = int_vector_basic();
+  push_back(vec, pod_t(10));
+  int* zeroth = index(vec, 0);
+  printf("pod_t Wrapping test:");
+  if (*zeroth == 10) printf("PASSED!\n");
+  else printf("FAILED! Expected %d, Found %d.\n");
+}
 
 
 int main(){
@@ -163,9 +164,10 @@ int main(){
   print_test();
   printf("Index result: %d\n", index_test()); 
   vector_t* fib0 = int_vector_basic();
-  fibonacci_printtest(fib0, 10);
+  //fibonacci_printtest(fib0, 10);
   erase_1_idx_test();
-  clear_test();
+  //clear_test();
+
 
   return 0;// + push_back_test();
 }

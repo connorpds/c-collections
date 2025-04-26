@@ -8,6 +8,7 @@
 
 
 typedef __uint128_t packed_int_t; 
+typedef uintptr_t packed_ptr_t;
 #define COMPRESSED_CHAR_BITWIDTH 6
 #define CHARS_PER_ARG sizeof(packed_int_t) * 8 / COMPRESSED_CHAR_BITWIDTH
 typedef char compressed_char_t;
