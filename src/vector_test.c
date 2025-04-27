@@ -1,5 +1,6 @@
 #include "vector_test.h"
 #include "collections.h"
+#include "utils/marked_ptrs.h"
 #include "utils/template_types.h"
 
 
@@ -89,8 +90,8 @@ void fibonacci_printtest(vector_t* vec, int n){
     int descendant = *antecedent + *preantecedent;
     //printf("descendant addr: %p\n", &descendant);
     push_back(vec, &descendant);
-    printf("Antecedent addr: %p, Preantecedent addr: %p, Descendant addr: %p\n", antecedent, preantecedent, &descendant);
-    printf("Antecedent value: %d, Preantecedent value: %d, Descendant value: %d\n", *antecedent, *preantecedent, descendant);
+    //printf("Antecedent addr: %p, Preantecedent addr: %p, Descendant addr: %p\n", antecedent, preantecedent, &descendant);
+    //printf("Antecedent value: %d, Preantecedent value: %d, Descendant value: %d\n", *antecedent, *preantecedent, descendant);
     print_coll(vec);
   }
   printf("### FIBONACCI PRINT TESTING COMPLETE ###\n\n");
@@ -151,10 +152,10 @@ void clear_test(){
 void pod_push_back_test(){
   vector_t* vec = int_vector_basic();
   push_back(vec, pod_t(10));
-  int* zeroth = index(vec, 0);
-  printf("pod_t Wrapping test:");
+  int* zeroth = (int*)index_(vec, 0);
+  printf("pod_t Wrapping test:\n");
   if (*zeroth == 10) printf("PASSED!\n");
-  else printf("FAILED! Expected %d, Found %d.\n");
+  else printf("FAILED! Expected %d, Found %d.\n", 10, *zeroth);
 }
 
 
@@ -164,12 +165,13 @@ int main(){
   print_test();
   printf("Index result: %d\n", index_test()); 
   vector_t* fib0 = int_vector_basic();
-  //fibonacci_printtest(fib0, 10);
+  fibonacci_printtest(fib0, 10);
   erase_1_idx_test();
-  //clear_test();
+  clear_test();
+  pod_push_back_test();
 
 
   return 0;// + push_back_test();
 }
 
-
+//for pod and the punning to work, we need to write functions for reading little-and-big-endian wide_pod_ts as smaller types correctly.
