@@ -117,4 +117,4 @@ void set_value_print_fun(coll_t* coll, print_fun_t fun);
 void set_key_print_fun(coll_t* coll, print_fun_t fun);
 
 ///////////////////////  PASSING WRAPPING  ///////////////////
-obj_t* pod_t(wide_pod_t val);
+obj_t* pod(wide_pod_t val);

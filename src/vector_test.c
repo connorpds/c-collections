@@ -74,24 +74,18 @@ vector_t* int_vector_pod(){
 
 void fibonacci_printtest(vector_t* vec, int n){
   printf("### TESTING PRINTING A FIBONACCI SEQUENCE ###\n");
-  //printf("Entered compound 0!\n");
-  int zero = 0; 
-  push_back(vec, &zero);
+  //printf("Entered compound 0!\n"); 
+  push_back(vec, pod(0));
   //printf("Zero pushed back!\n");
   print_coll(vec);
-  int one = 1; 
-  push_back(vec, &one);
+  push_back(vec, pod(1));
   //printf("One pushed back!\n");
   print_coll(vec);
 
   for (int i = 2; i < n; i++){
-    int* antecedent = index_(vec, i - 1);
-    int* preantecedent = index_(vec, i - 2);
-    int descendant = *antecedent + *preantecedent;
-    //printf("descendant addr: %p\n", &descendant);
-    push_back(vec, &descendant);
-    //printf("Antecedent addr: %p, Preantecedent addr: %p, Descendant addr: %p\n", antecedent, preantecedent, &descendant);
-    //printf("Antecedent value: %d, Preantecedent value: %d, Descendant value: %d\n", *antecedent, *preantecedent, descendant);
+    int antecedent = *index_(vec, i - 1);
+    int preantecedent = *index_(vec, i - 2);
+    push_back(vec, pod(antecedent + preantecedent));
     print_coll(vec);
   }
   printf("### FIBONACCI PRINT TESTING COMPLETE ###\n\n");
@@ -151,9 +145,9 @@ void clear_test(){
 
 void pod_push_back_test(){
   vector_t* vec = int_vector_basic();
-  push_back(vec, pod_t(10));
+  push_back(vec, pod(10));
   int* zeroth = (int*)index_(vec, 0);
-  printf("pod_t Wrapping test:\n");
+  printf("pod_t Wrapping test: ");
   if (*zeroth == 10) printf("PASSED!\n");
   else printf("FAILED! Expected %d, Found %d.\n", 10, *zeroth);
 }
@@ -174,4 +168,3 @@ int main(){
   return 0;// + push_back_test();
 }
 
-//for pod and the punning to work, we need to write functions for reading little-and-big-endian wide_pod_ts as smaller types correctly.
