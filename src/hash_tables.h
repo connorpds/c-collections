@@ -24,6 +24,6 @@ struct hash_table_tree_node{
 hash_table_tree_node* make_hash_tree_node(char* key_object, size_t key_size, 
                                         char* value_object, size_t value_size);
 
-hash_table_tree_node* binary_search_htt(hash_table_tree_node* search_root, char* key_object, size_t key_size);
+hash_table_tree_node* htt_binary_search(hash_table_tree_node* search_root, char* key_object, size_t key_size);
 
 

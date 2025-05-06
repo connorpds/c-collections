@@ -29,17 +29,17 @@ hash_table_tree_node* make_hash_tree_node(char* key_object, size_t key_size,
 
 
 
-hash_table_tree_node* binary_search_htt(hash_table_tree_node* search_root, char* key_object, size_t key_size){
+hash_table_tree_node* htt_binary_search(hash_table_tree_node* search_root, char* key_object, size_t key_size){
   //hash la cle 
   unsigned long hashed = mult_hash(key_object, key_size);
   hash_table_tree_node* curr = search_root;
   while (curr){
     if (curr->hashed_key == hashed) return curr;
-    bool go_left = curr->left && (curr->left->hashed_key > hashed); 
-    bool go_right = curr->right && (hashed > curr->right->hashed_key);
-    if (go_left) curr = curr->left;
-    else if (go_right) curr = curr->right;
+    else if (curr->left && (curr->left->hashed_key > hashed)) curr = curr->left; 
+    else if (curr->right && (hashed > curr->right->hashed_key)) curr = curr->right;
     else break;
   }
   return NULL;
 }
+
+
