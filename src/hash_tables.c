@@ -1,5 +1,4 @@
 #include "hash_tables.h"
-#include "utils/marked_ptrs.h"
 
 
 unsigned long mult_hash(const char* key_object, size_t object_size){
@@ -13,10 +12,10 @@ unsigned long mult_hash(const char* key_object, size_t object_size){
 }
 
 hash_table_tree_node* make_hash_tree_node(char* key_object, size_t key_size, 
-                                        char* value_object, size_t value_size){
+                                          char* value_object, size_t value_size){
   hash_table_tree_node* node = malloc(sizeof(hash_table_tree_node));
   //hash our key 
-  node->hashed_key = mult_hash(unmarked_ptr(key_object), key_size);
+  node->hashed_key = mult_hash(key_object, key_size);
   //allocate/copy key 
   node->key = malloc(key_size);
   memcpy(node->key, key_object, key_size);
@@ -42,4 +41,6 @@ hash_table_tree_node* htt_binary_search(hash_table_tree_node* search_root, char*
   return NULL;
 }
 
+hash_table_tree_node* htt_place_node(hash_table_tree_node* root, char* key_object, size_t key_size){
 
+}

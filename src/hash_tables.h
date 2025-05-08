@@ -22,7 +22,7 @@ struct hash_table_tree_node{
 //hash_table_tree_node* new_binary_tree_node(size_t data_size);
 
 hash_table_tree_node* make_hash_tree_node(char* key_object, size_t key_size, 
-                                        char* value_object, size_t value_size);
+                                          char* value_object, size_t value_size);
 
 hash_table_tree_node* htt_binary_search(hash_table_tree_node* search_root, char* key_object, size_t key_size);
 
